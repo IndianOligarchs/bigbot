@@ -176,7 +176,7 @@ class Moderation(commands.Cog):
             else:
                 await member.send("**You have been banned from " + ctx.guild.name + " for " + reason + ".**")
                 await ctx.send("Banned " + member.mention + " for " + reason + ".")
-            await ctx.guild.ban(member, reason=reason)
+            await ctx.guild.ban(member, reason=f'{ctx.author}({ctx.author.id}): {reason}')
 
 
     

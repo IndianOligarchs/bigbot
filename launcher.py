@@ -12,7 +12,7 @@ from datetime import date
 import json
 import asyncpraw
 intents = Intents.all()
-token = 'NzE5NzI3NjIyNzgyODQ1MDMx.Xt7olQ.GDkXga6bXn9yrypKBgoWzYQsuQk'
+token = 'NzE5NzI3NjIyNzgyODQ1MDMx.Xt7olQ.ox1fZ6ynAXFO7UX9AgBOlLDbnU8'
 async def get_prefix(bot, message):
 
     connection = await bot.pg_con.acquire()

@@ -34,6 +34,28 @@ class Config(commands.Cog):
 
 
 
+    @commands.group(invoke_without_command=True)
+    async def settings(self, ctx):
+        """This command changes the settings of the bot to customize the bot's server functions."""
+        #do stuff
+        #send an embed with all of the emojis
+        switchoff = "<:off:798326518966386689>"
+        switchon = "<:switchon:798326610209275964>"
+        return
+
+
+    @settings.command()
+    async def change(self, ctx, setting, status):
+        conn = await self.bot.pg_con.acquire()
+        async with conn.transaction():
+            await conn.execute("UPDATE config SET $1 = $2 WHERE guild_id = $3", setting.lower(), status, ctx.guild.id)
+        await self.bot.pg_con.release(conn)
+        if status.lower() is "false":
+            emoji = "<:off:798326518966386689>"
+        else:
+            emoji = "<:switchon:798326610209275964>"
+        embed = discord.Embed(color=discord.Color.blue(), timestamp=datetime.datetime.utcnow(), title='SUCCESS!', description=f'{setting} has been changed.\nIt is now {emoji}.')
+        await ctx.send(embed=embed)
     
 
 

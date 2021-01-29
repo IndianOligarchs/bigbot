@@ -5,7 +5,8 @@ class MyHelpCommand(commands.HelpCommand):
         # This function triggers when somone type `<prefix>help`
     async def send_bot_help(self, mapping):
             ctx = self.context
-            embed = discord.Embed(color=discord.Color.dark_purple())
+            embed = discord.Embed(color=discord.Color.blurple())
+            embed.add_field(name='To get more info on the modules:', value=f'Send ``{self.clean_prefix}help [Module Name]`` for more info on each module, please remember to capitalize the first letter of the module.')
             embed.set_author(name='BigBot Help')
             ctx.bot.cogs
             for cog in ctx.bot.cogs:
@@ -21,8 +22,10 @@ class MyHelpCommand(commands.HelpCommand):
             if cog == 'jishaku':
                     return
             else:
-                    embed = discord.Embed(color=discord.Color.dark_purple())
+                    embed = discord.Embed(color=discord.Color.blurple())
                     embed.set_author(name=f'{cog.qualified_name} Help')
+                    embed.add_field(name='Key:', value='```<> = optional argument\n[] = required argument\nDo not type [] or <> during a command.```')
+ 
                     for thing in cog.get_commands():
                             embed.add_field(name=thing.qualified_name, value=f'Description: {thing.help}\nUsage: {self.clean_prefix}{thing.qualified_name} {thing.signature}', inline=False)
                     await ctx.send(embed=embed)
@@ -30,17 +33,17 @@ class MyHelpCommand(commands.HelpCommand):
     
     async def send_command_help(self, command):
             ctx = self.context
-            embed = discord.Embed(color=discord.Color.dark_purple())
+            embed = discord.Embed(color=discord.Color.blue())
             embed.set_author(name=f'{command.qualified_name} Help')
             embed.add_field(name=f'Usage: {self.clean_prefix}{command.qualified_name} {command.signature}', value=f'Description: {command.help}', inline=False)
 
-            
+            embed.add_field(name='Key:', value='```<> = optional argument\n[] = required argument\nDo not type [] or <> during a command.```')
             await ctx.send(embed=embed)
 
     async def send_group_help(self, group):
             ctx = self.context
             embed = discord.Embed(color=discord.Color.dark_purple())
-            embed=set_author(name=f'{group.qualified_name} Help')
+            embed.set_author(name=f'{group.qualified_name} Help')
             for thing in group.commands:
                 embed.add_field(name=thing.qualified_name, value=f'Description: {thing.help}\nUsage: {self.clean_prefix}{thing.qualified_name} {thing.signature}', inline=False)
             await ctx.send(embed=embed)

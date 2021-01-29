@@ -51,15 +51,29 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.is_owner()
     async def reloadall(self, ctx):
         """This is a bot owner only command."""
-        for file in os.listdir("cogs"): 
+        for file in os.curdir: 
             if file.endswith(".py"):
                 name = file[:-3]
-                try:
-                    self.bot.reload_extension(f'cogs.{name}')
-                    await ctx.send(f'Reloaded {name}.')
-                except Exception as e:
-                    embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.datetime.utcnow(), title='ERROR', description=str(e))
-                    await ctx.send(embed=embed)
+                self.bot.reload_extension(f'cogs.{name}')
+                await ctx.send(f'Reloaded {name}.')
+
+
+    @reloadall.error
+    async def reloadall_error(self, ctx, error):
+        embed = discord.Embed(color=discord.Color.red(), timestamp=datetime.datetime.utcnow(), title='ERROR', description=str(error))
+        await ctx.send(embed=embed)
+
+
+    @commands.command()
+    @commands.is_owner()
+    async def addall(self, ctx):
+        for guild in self.bot.guilds:
+            connection = await self.bot.pg_con.acquire()
+            async with connection.transaction():
+                await connection.execute('INSERT INTO config (guild_id, automod, logging) VALUES($1, $2, $3)', guild.id, False, False)
+            await self.bot.pg_con.release(connection) 
+
+
 
 
     @commands.Cog.listener()
@@ -67,6 +81,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         connection = await self.bot.pg_con.acquire()
         async with connection.transaction():
             await connection.execute('INSERT INTO prefixes (guild_id, prefix) VALUES($1, $2)', guild.id, '-')
+            await connection.execute('INSERT INTO config (guild_id, automod, logging) VALUES($1, $2, $3)', guild.id, False, False)
         await self.bot.pg_con.release(connection)
         user = self.bot.get_user(713979128969429012)
         embed = discord.Embed(color=discord.Color.blue(), timestamp=datetime.datetime.utcnow(), title=':tada: NEW GUILD! :tada:', description=f'We now have {len(self.bot.guilds)} guilds!!')
@@ -92,15 +107,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             await connection.execute('DELETE FROM prefixes WHERE guild_id = $1', guild_id)
         await self.bot.pg_con.release(connection)
 
-
-    @commands.command()
-    @commands.is_owner()
-    async def cleanup(self, ctx, amount=5):
-        def is_bot(m):
-            return m.author == self.bot.user
-        channel = ctx.channel
-        await channel.purge(limit=amount, check=is_bot)
-        await ctx.send(f'I made my slave clean {amount} messages from this channel. He will be beaten for the slowness.')
 
 
 def setup(bot):
