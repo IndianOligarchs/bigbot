@@ -8,6 +8,7 @@ class MyHelpCommand(commands.HelpCommand):
             embed = discord.Embed(color=discord.Color.blurple())
             embed.add_field(name='To get more info on the modules:', value=f'Send ``{self.clean_prefix}help [Module Name]`` for more info on each module, please remember to capitalize the first letter of the module.')
             embed.set_author(name='BigBot Help')
+            embed.add_field(name='What is the best way you can support me?', value='[Click here and invite me to your servers!](https://discord.com/oauth2/authorize?client_id=719727622782845031&permissions=8&scope=bot)')
             ctx.bot.cogs
             for cog in ctx.bot.cogs:
                     if cog == 'Jishaku':

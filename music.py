@@ -69,8 +69,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
             # take first item from a playlist
             data = data['entries'][0]
 
-        await ctx.send(f'```ini\n[Added {data["title"]} to the Queue.]\n```')
-
+        embed = discord.Embed(color=discord.Color.green(), title='Success!', description=f'Added {data["title"]} to the queue.')
+        await ctx.send(embed=embed)
         if download:
             source = ytdl.prepare_filename(data)
         else:
@@ -143,8 +143,8 @@ class MusicPlayer:
             self.current = source
 
             self._guild.voice_client.play(source, after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set))
-            self.np = await self._channel.send(f'**Now Playing:** `{source.title}` requested by '
-                                               f'`{source.requester}`')
+            emby = discord.Embed(color=discord.Color.blue(), 
+            self.np = await self._channel.send(
             await self.next.wait()
 
             # Make sure the FFmpeg process is cleaned up.
@@ -242,10 +242,10 @@ class Music(commands.Cog):
                 await channel.connect()
             except asyncio.TimeoutError:
                 raise VoiceConnectionError(f'Connecting to channel: <{channel}> timed out.')
+        embed = discord.Embed(color=discord.Color.green(), title=f'Joined {channel}')
+        await ctx.send(embed=embed)
 
-        await ctx.send(f'Connected to: **{channel}**')
-
-    @commands.command(name='play', aliases=['sing'])
+    @commands.command(name='play', aliases=['sing', 'p'])
     async def play_(self, ctx, *, search: str):
         """Request a song and add it to the queue.
         This command attempts to join a valid voice channel if the bot is not already in one.
@@ -344,14 +344,9 @@ class Music(commands.Cog):
         if not player.current:
             return await ctx.send('I am not currently playing anything!')
 
-        try:
             # Remove our previous now_playing message.
-            await player.np.delete()
-        except discord.HTTPException:
-            pass
-
-        player.np = await ctx.send(f'**Now Playing:** `{vc.source.title}` '
-                                   f'requested by `{vc.source.requester}`')
+        embed = discord.Embed(color=discord.Color.blue(), title=f'Now Playing: {vc.source.title}', description=f'Requested By: {vc.source.requester}')
+        player.np = await ctx.send(embed=embed)
 
     @commands.command(name='volume', aliases=['vol'])
     async def change_volume(self, ctx, *, vol: float):
